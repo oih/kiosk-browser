@@ -8,13 +8,12 @@
 gboolean on_key_press(GtkWidget*, GdkEventKey*, gpointer);
 
 void reload_browser(int);
-void toggle_fullscreen(int);
 void maximize();
 void unmaximize();
 
 static WebKitWebView* web_view;
 static GtkWidget *window;
-gchar* default_url = "https://github.com/pschultz/kiosk-browser/blob/master/README.md";
+gchar* default_url = "http://oih.ac/";
 
 int main(int argc, char** argv) {
   gtk_init(&argc, &argv);
@@ -27,7 +26,6 @@ int main(int argc, char** argv) {
   web_view = WEBKIT_WEB_VIEW(webkit_web_view_new());
 
   signal(SIGHUP, reload_browser);
-  signal(SIGUSR1, toggle_fullscreen);
 
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(web_view));
 
@@ -49,24 +47,11 @@ gboolean on_key_press(GtkWidget* window, GdkEventKey* key, gpointer userdata) {
   if(key->type == GDK_KEY_PRESS && key->keyval == GDK_F5) {
     reload_browser(0);
   }
-  else if(key->type == GDK_KEY_PRESS && key->keyval == GDK_F11) {
-    toggle_fullscreen(0);
-  }
-
   return FALSE;
 }
 
 void reload_browser(int signum) {
   webkit_web_view_reload_bypass_cache(web_view);
-}
-
-void toggle_fullscreen(int signum) {
-  if(gtk_window_get_decorated(GTK_WINDOW(window))) {
-    maximize();
-  }
-  else {
-    unmaximize();
-  }
 }
 
 void maximize() {
